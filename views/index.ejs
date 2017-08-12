@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CryptoSummary!</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="/bootstrap.min.css" rel="stylesheet">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header"><small>
+                <p id="countdown" align="right">This website will refresh in a minute</p>
+                </small>
+                    <script>
+                    let countDown = 59;
+                    function countdown() {
+                        setInterval(function () {
+                            if(countDown == 0) {
+                                location.reload(true);
+                            }
+                            if (countDown > 0) {
+                                document.getElementById('countdown').innerHTML = "This website will refresh in " + countDown + " sec";
+                            } else {
+                                document.getElementById('countdown').innerHTML = "Refreshing...";
+                            }
+                            countDown--;
+                        }, 1000);
+                    }
+                    countdown();
+                </script>
+
+                <h1>
+                    CryptoSummary! <br><small>Summary of your crypto investments</small>
+                </h1>
+            </div>
+            <h3>
+                Summary of your portfolio
+            </h3>
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td>
+                        <b>Invested</b>
+                    </td>
+                    <td align="right">
+                        <%= investedValue %>
+                    </td>
+                    <td>
+                        EUR
+                    </td>
+                </tr>
+                <tr class="active">
+                    <td>
+                        <b>Current Value</b>
+                    </td>
+                    <td align="right">
+                        <%= currentValue %>
+                    </td>
+                    <td>
+                        EUR
+                    </td>
+                </tr>
+                <tr  class="
+                    <% if(differenceValue > 0) {%>
+                    <%= "success" %>
+                    <%} else { %>
+                    <%= "danger" %>
+                    <%}%>
+                    ">
+
+                    <td>
+                        <b>Difference</b>
+                    </td>
+                    <td align="right">
+                        <b><%= differenceValue %></b>
+                    </td>
+                    <td>
+                        <b>EUR</b>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <h3 class="text-left">
+                Detailed view of your positions
+            </h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        Pair
+                    </th>
+                    <th>
+                        Amount bought
+                    </th>
+                    <th>
+                        Bought at price
+                    </th>
+                    <th>
+                        Invested
+                    </th>
+                    <th>
+                        Current price
+                    </th>
+                    <th>
+                        Current value
+                    </th>
+                    <th>
+                        Difference
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for(var i = 0; i < toParse.length; i++) { %>
+                <tr  class="
+                    <% if(toParse[i].thisDifference > 0) {%>
+                    <%= "success" %>
+                    <%} else { %>
+                    <%= "danger" %>
+                    <%}%>
+                    ">
+                    <td>
+                        <%= i+1 %>
+                    </td>
+                    <td>
+                        <%= toParse[i].pair %>
+                    </td>
+                    <td>
+                        <%= toParse[i].amountBought %>
+                    </td>
+                    <td>
+                        <%= toParse[i].boughtFor %>
+                    </td>
+                    <td>
+                        <%= toParse[i].invested %>
+                    </td>
+                    <td>
+                        <%= toParse[i].currentValueOfOne %>
+                    </td>
+                    <td>
+                        <%= toParse[i].currentValueOfAll %>
+                    </td>
+                    <td>
+                        <%= toParse[i].thisDifference %>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <a href="/">
+            <button type="button" class="btn btn-block btn-primary" href="#modal-container-285181">
+                <b>Build new custom URL</b>
+            </button>
+            </a>
+        </div>
+    </div>
+</div>
+<br>
+
+
+</body>
+</html>
