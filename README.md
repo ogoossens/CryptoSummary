@@ -22,7 +22,7 @@ Crypto: XBT, ETH, XRP, LTC, BCH, ETC, DASH, EOS
 
 This was build for my use - should you need and require more pairs/currencies Ill add them, or just make a pull request :P
 
-# Few side notes\
+# Few side notes
 * Actually your coins can be stored anywhere, your wallet or traders wallet - does not matter :-)
 
 * You can use any exchange - Im just pulling the current values from Kraken API so there might be some differences to your trader
