@@ -1,0 +1,5 @@
+#top-alert {
+    top: 0;
+    z-index: 99999;
+    text-align:center
+}

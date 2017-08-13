@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,33 +15,39 @@
 <body>
 
 <div class="container-fluid">
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <h1>
+                CryptoSummary! <br>
+                <small>Summary of your crypto investments</small>
+            </h1>
+        </div>
+        <div class="col-md-6">
+            <small>
+                <p id="countdown" align="right">This website will refresh in a minute</p>
+            </small>
+            <script>
+                let countDown = 59;
+                function countdown() {
+                    setInterval(function () {
+                        if (countDown == 0) {
+                            location.reload(true);
+                        }
+                        if (countDown > 0) {
+                            document.getElementById('countdown').innerHTML = "This website will refresh in " + countDown + " sec";
+                        } else {
+                            document.getElementById('countdown').innerHTML = "Refreshing...";
+                        }
+                        countDown--;
+                    }, 1000);
+                }
+                countdown();
+            </script>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="page-header"><small>
-                <p id="countdown" align="right">This website will refresh in a minute</p>
-                </small>
-                    <script>
-                    let countDown = 59;
-                    function countdown() {
-                        setInterval(function () {
-                            if(countDown == 0) {
-                                location.reload(true);
-                            }
-                            if (countDown > 0) {
-                                document.getElementById('countdown').innerHTML = "This website will refresh in " + countDown + " sec";
-                            } else {
-                                document.getElementById('countdown').innerHTML = "Refreshing...";
-                            }
-                            countDown--;
-                        }, 1000);
-                    }
-                    countdown();
-                </script>
-
-                <h1>
-                    CryptoSummary! <br><small>Summary of your crypto investments</small>
-                </h1>
-            </div>
             <h3>
                 Summary of your portfolio
             </h3>
@@ -56,7 +61,7 @@
                         <%= investedValue %>
                     </td>
                     <td>
-                        EUR
+                        <%= currency %>
                     </td>
                 </tr>
                 <tr class="active">
@@ -67,15 +72,15 @@
                         <%= currentValue %>
                     </td>
                     <td>
-                        EUR
+                        <%= currency %>
                     </td>
                 </tr>
-                <tr  class="
-                    <% if(differenceValue > 0) {%>
+                <tr class="
+                    <% if(differenceValue > 0) { %>
                     <%= "success" %>
-                    <%} else { %>
+                    <% } else { %>
                     <%= "danger" %>
-                    <%}%>
+                    <% } %>
                     ">
 
                     <td>
@@ -85,7 +90,7 @@
                         <b><%= differenceValue %></b>
                     </td>
                     <td>
-                        <b>EUR</b>
+                        <b><%= currency %></b>
                     </td>
                 </tr>
                 </tbody>
@@ -125,15 +130,15 @@
                 </thead>
                 <tbody>
                 <% for(var i = 0; i < toParse.length; i++) { %>
-                <tr  class="
-                    <% if(toParse[i].thisDifference > 0) {%>
+                <tr class="
+                    <% if(toParse[i].thisDifference > 0) { %>
                     <%= "success" %>
-                    <%} else { %>
+                    <% } else { %>
                     <%= "danger" %>
-                    <%}%>
+                    <% } %>
                     ">
                     <td>
-                        <%= i+1 %>
+                        <%= i + 1 %>
                     </td>
                     <td>
                         <%= toParse[i].pair %>
@@ -168,15 +173,13 @@
     <div class="container-fluid">
         <div class="col-md-12">
             <a href="/">
-            <button type="button" class="btn btn-block btn-primary" href="#modal-container-285181">
-                <b>Build new custom URL</b>
-            </button>
+                <button type="button" class="btn btn-block btn-primary" href="#modal-container-285181">
+                    <b>Build new custom URL</b>
+                </button>
             </a>
         </div>
     </div>
 </div>
 <br>
-
-
 </body>
 </html>

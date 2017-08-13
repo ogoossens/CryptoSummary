@@ -8,11 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="/bootstrap.min.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
     <script src="jquery.min.js"></script>
     <script src="bootstrap.min.js"></script>
 
 </head>
 <body>
+<% if(fromURL) { %>
+<div id="top-alert" class="alert alert-warning" role="alert">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>CryptoSummary! was updated</strong> rebuild your custom URL please
+</div>
+<% } %>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
@@ -103,13 +111,16 @@
                     <b>Few notes</b></h3>
                 <ul>
                     <li>
-                        <b>Currency support: </b> EUR
+                        <b>Currency support: </b> EUR and USD
                     </li>
                     <li>
-                        <b>Crypto support: </b> BTC, BCH, ETH, XRP, LTC, XLM, DASH, ETC and EOS
+                        <b>URL builder support: </b> top 50 coins from <a href="http://coinmarketcap.com/">http://coinmarketcap.com</a>
                     </li>
                     <li>
-                        <b>Current values from: </b> Kraken
+                        <b>URL support: </b> top 100 coins from <a href="http://coinmarketcap.com/">http://coinmarketcap.com</a>
+                    </li>
+                    <li>
+                        <b>Current values from: </b> Coinmarketcap.com
                     </li>
                     <li>
                         <b>Get in touch or help out? GITHUB: </b> <a href="https://github.com/ogoossens/CryptoSummary">https://github.com/ogoossens/CryptoSummary</a>
@@ -133,40 +144,46 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <label>Coin</label>
                         <div class="form-group">
                             <select class="form-control" id="coinType"
                                     onChange='document.getElementById("basic-addon2").textContent=document.getElementById("coinType").value;'>
-                                <option value="XBT">Bitcoin</option>
-                                <option value="ETH">Ethereum</option>
-                                <option value="XRP">XRP</option>
-                                <option value="LTC">Litecoin</option>
-                                <option value="BCH">Bitcoin Cash</option>
-                                <option value="XLM">Stellar Lumens</option>
-                                <option value="DASH">Dash</option>
-                                <option value="EOS">EOS</option>
-                                <option value="ETC">Ethereum Classic</option>
+                                <%
+                                for(let i = 0; i < urlBuilderData.length; i++) { %>
+                                <option value="<%= urlBuilderData[i].symbol %>"><%= urlBuilderData[i].name %></option>
+                                <% } %>
                             </select>
+                            <small class="form-text text-muted">*smaller coins need manual URL creation</small>
+
                         </div>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <label>Amount</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Please enter amount bought"
+                            <input type="text" class="form-control" placeholder="Amount"
                                    aria-describedby="basic-addon2" id="amount">
-                            <span class="input-group-addon" id="basic-addon2">XBT</span>
+                            <span class="input-group-addon" id="basic-addon2">BTC</span>
                         </div>
                         <br>
                     </div>
-                    <div class="col-lg-4">
-                        <label>Price when purchased (EUR)</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Please enter the price"
-                                   aria-describedby="basic-addon2" id="price">
-                            <span class="input-group-addon" id="basic-addon2">EUR</span>
+                    <div class="col-lg-3">
+                        <label>Currency</label>
+                        <div class="form-group">
+                            <select class="form-control" id="currency"
+                                    onChange='swapCurrency()'>
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                            </select>
                         </div>
-                        <small class="form-text text-muted">* EUR support only</small>
+                    </div>
+                    <div class="col-lg-3">
+                        <label>Price when purchased</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Price"
+                                   aria-describedby="basic-addon2" id="price">
+                            <span class="input-group-addon" id="basic-addon3">EUR</span>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -186,9 +203,9 @@
                     <div class="col-lg-12">
                         <div class="input-group">
                             <span class="input-group-addon"
-                                  id="basic-addon3">CryptoSummary ... .com/?</span>
+                                  id="basic-addon4">CryptoSummary ... .com/?0=EUR</span>
                             <input type="text" class="form-control" id="basic-url"
-                                   aria-describedby="basic-addon3" disabled>
+                                   aria-describedby="basic-addon4" disabled>
                         </div>
                     </div>
                 </div>
@@ -209,29 +226,37 @@
         </div>
     </div>
 </div>
-
 <script>
     function clearContents() {
         document.getElementById("amount").value = "";
         document.getElementById("price").value = "";
-        document.getElementById("coinType").value = "XBT";
-        document.getElementById("basic-addon2").textContent = "XBT";
+        document.getElementById("coinType").selectedIndex = "0";
+        document.getElementById("basic-addon2").textContent = document.getElementById("coinType").value;
         document.getElementById("amount").className = "form-control";
         document.getElementById("price").className = "form-control";
     }
 
     function openModal() {
         clearContents();
-        urlBuild = 0;
+        urlBuild = 1;
         document.getElementById("basic-url").value = "";
         document.getElementById("goToButton").className = "btn btn-block basic disabled";
     }
 
     function goToConstructed() {
         if (!(document.getElementById("basic-url").value == "")) {
-            let goTo = "http://cryptosummary.herokuapp.com/?" + document.getElementById("basic-url").value;
+            let goTo = "http://cryptosummary.herokuapp.com/?" + "0=" + getCurrency() + "&" + document.getElementById("basic-url").value;
             location.href = goTo;
         }
+    }
+
+    function swapCurrency() {
+        document.getElementById("basic-addon3").textContent = document.getElementById("currency").value;
+        document.getElementById("basic-addon4").textContent = "CryptoSummary ... .com/?0=" + getCurrency() + "&";
+    }
+
+    function getCurrency() {
+        return document.getElementById("currency").value;
     }
 
     function constructURL() {
@@ -254,7 +279,7 @@
         } else {
             document.getElementById("price").className = "form-control";
             if (!(amount == "" || isNaN(amount))) {
-                document.getElementById("basic-url").value += urlBuild + "=" + coin + "EUR" + "*" + amount + "*" + price + "&";
+                document.getElementById("basic-url").value += urlBuild + "=" + coin + "*" + amount + "*" + price + "&";
                 urlBuild++;
                 clearContents();
                 document.getElementById("goToButton").className = "btn btn-block btn-success";

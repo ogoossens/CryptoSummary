@@ -1,4 +1,3 @@
-// Supports
 // See Github for more info
 
 // Modules
@@ -9,18 +8,9 @@ let request = require('request');
 let favicon = require('serve-favicon');
 let app = express();
 
-// Cached Kraken data
-let krakenData = {
-    XBTEUR: "",
-    ETHEUR: "",
-    XRPEUR: "",
-    LTCEUR: "",
-    BCHEUR: "",
-    XLMEUR: "",
-    DASHEUR: "",
-    EOSEUR: "",
-    ETCEUR: ""
-};
+// Cached Exchange data
+let exchangeData = [];
+let urlBuilderData = [];
 
 // Port specified
 let port = process.env.PORT || 80;
@@ -45,6 +35,23 @@ app.use("/", function (req, res) {
         // With this we get an array of values of the object
         let temp = Object.keys(req.query).map((k) => req.query[k]);
 
+        // Log the request for analysis
+        console.log("New REQUEST: " + temp + " BY: " + req.connection.remoteAddress);
+
+        // Request data
+        let currency = temp[0];
+
+        if (!(currency == "EUR" || currency == "USD")) {
+            res.render('error', {
+                fromURL: true,
+                urlBuilderData: urlBuilderData
+            });
+            return;
+        }
+
+        // We got the currency, lets delete the first element
+        temp.shift();
+
         // Statistic data
         let investedValue = 0;
         let currentValue = 0;
@@ -52,16 +59,25 @@ app.use("/", function (req, res) {
         // Lets divide this array into an array of objects
         let toParse = [];
         for (let i = 0; i < temp.length; i++) {
+            // Split the string
+            let onePart = temp[i].split("*");
+
             // Now go through the object and fill in the data
             toParse[i] = {
-                pair: temp[i].split("*")[0],
-                amountBought: temp[i].split("*")[1],
-                boughtFor: temp[i].split("*")[2],
-                invested: temp[i].split("*")[1] * temp[i].split("*")[2],
-                currentValueOfOne: krakenData[temp[i].split("*")[0]],
-                currentValueOfAll: krakenData[temp[i].split("*")[0]] * temp[i].split("*")[1],
+                coinSymbol: onePart[0],
+                currency: currency,
+                pair: onePart[0] + currency,
+                amountBought: onePart[1],
+                boughtFor: onePart[2],
+                invested: onePart[1] * onePart[2],
+                currentValueOfOne: "",
+                currentValueOfAll: "",
                 thisDifference: ""
             };
+
+            // Calculate the values
+            toParse[i].currentValueOfOne = getCurrentValueFor(toParse[i].coinSymbol, toParse[i].currency);
+            toParse[i].currentValueOfAll = toParse[i].currentValueOfOne * toParse[i].amountBought;
 
             // Calculate the difference
             toParse[i].thisDifference = toParse[i].currentValueOfAll - toParse[i].invested;
@@ -74,6 +90,7 @@ app.use("/", function (req, res) {
             toParse[i].invested = roundNumber(toParse[i].invested);
             toParse[i].currentValueOfAll = roundNumber(toParse[i].currentValueOfAll);
             toParse[i].thisDifference = roundNumber(toParse[i].thisDifference);
+
         }
 
         // Round the values
@@ -84,15 +101,18 @@ app.use("/", function (req, res) {
         let differenceValue = currentValue - investedValue;
         differenceValue = roundNumber(differenceValue);
 
-
         // Ok the info was parsed, time to let EJS take over
         res.render('index', {
             differenceValue: differenceValue,
             currentValue: currentValue,
             investedValue: investedValue,
-            toParse: toParse
+            toParse: toParse,
+            currency: currency
         });
-    } else res.render('error');
+    } else res.render('error', {
+        fromURL: false,
+        urlBuilderData: urlBuilderData
+    });
 });
 
 // Update the coins for the first time
@@ -100,77 +120,57 @@ updateAllCoins();
 
 // Schedule update for every 55 seconds
 setInterval(function () {
-    updateAllCoins();
+    //updateAllCoins();
 }, 55000);
 
 // Start listening for requests
 app.listen(port);
 
-// Function to parse Kraken API for current values
 // Use async to collect results
-function getCurrentValueFor(pairName) {
-
-    let resultPairName = "";
-
-    switch (pairName) {
-
-        case "XBTEUR":
-            // BTC / EUR
-            resultPairName = "XXBTZEUR";
-            break;
-        case "ETHEUR":
-            // ETH / EUR
-            resultPairName = "XETHZEUR";
-            break;
-        case "XRPEUR":
-            // XRP / EUR
-            resultPairName = "XXRPZEUR";
-            break;
-        case "LTCEUR":
-            // LTC / EUR
-            resultPairName = "XLTCZEUR";
-            break;
-        case "BCHEUR":
-            // BCH / EUR
-            resultPairName = "BCHEUR";
-            break;
-        case "XLMEUR":
-            // BCH / EUR
-            resultPairName = "XXLMZEUR";
-            break;
-        case "DASHEUR":
-            // BCH / EUR
-            resultPairName = "DASHEUR";
-            break;
-        case "EOSEUR":
-            // BCH / EUR
-            resultPairName = "EOSEUR";
-            break;
-        case "ETCEUR":
-            // BCH / EUR
-            resultPairName = "XETCZEUR";
-            break;
+function getCurrentValueFor(coinSymbol, currency) {
+    for (let i = 0; i < exchangeData.length; i++) {
+        if (coinSymbol == exchangeData[i].symbol) {
+            return exchangeData[i][currency];
+        }
     }
-
-    // Now we know the pairName and the resultPair name
-    // No idea why Kraken keeps that separate?
-    request('https://api.kraken.com/0/public/Ticker?pair=' + pairName, function (error, response, body) {
-        if (error) {
-            console.log('Error:' + error);
-        }
-        if (!(response.body.toString('utf-8').charAt(0) == "<")) {
-            krakenData[pairName] = JSON.parse(response.body.toString('utf-8')).result[resultPairName].c[0];
-        } else {
-            console.log('Error: KRAKEN RETURNING HTML, offline?');
-        }
-    });
 }
 
 function updateAllCoins() {
-    console.log("Updating all coins");
-    for (let i = 0; i < Object.keys(krakenData).length; i++) {
-        getCurrentValueFor(Object.keys(krakenData)[i]);
-    }
+    console.log("COIN UPDATE: started");
+
+    // Coinbase source
+    let tempArray = [];
+
+    request('https://api.coinmarketcap.com/v1/ticker/?convert=EUR&limit=200', function (error, response, body) {
+        if (error) {
+            console.log('Error:' + error);
+        }
+        if (response.body.toString('utf-8').charAt(0) == "[") {
+            tempArray = JSON.parse(response.body.toString('utf-8'));
+
+            exchangeData = [];
+            urlBuilderData = [];
+
+            for (let i = 0; i < tempArray.length; i++) {
+                exchangeData.push({
+                    name: tempArray[i].name,
+                    symbol: tempArray[i].symbol,
+                    USD: tempArray[i].price_usd,
+                    EUR: tempArray[i].price_eur
+                });
+                if (i < 50) {
+                    urlBuilderData.push({
+                        name: tempArray[i].name,
+                        symbol: tempArray[i].symbol,
+                    })
+                }
+            }
+            console.log("COIN UPDATE: done");
+
+        } else {
+            console.log('Error: SOMETHING DIFFERENT RETURNED');
+        }
+    });
 }
 
 function roundNumber(num) {
