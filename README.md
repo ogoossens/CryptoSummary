@@ -15,12 +15,8 @@ Use the builder on the homepage :) but the system is easy to understand
 # Sample URL
 http://cryptosummary.herokuapp.com/?1=XRPEUR*10000*0.19&2=LTCEUR*15*38&3=XBTEUR*1.5*2000
 
-# Supported
-Currency: EUR
-
-Crypto: XBT, ETH, XRP, LTC, BCH, ETC, DASH, EOS
-
-This was build for my use - should you need and require more pairs/currencies Ill add them, or just make a pull request :P
+# Important
+Check landing page for all relevant info
 
 # Few side notes
 * Actually your coins can be stored anywhere, your wallet or traders wallet - does not matter :-)
@@ -31,4 +27,4 @@ This was build for my use - should you need and require more pairs/currencies Il
 This is more or less just an calculator to see the pro- or regress of the value of coins you bought
 
 # Security
-Thats the neat point, Im woking with public Kraken API and the only thing you specify is : HOW MUCH of WHAT did you buy AT WHICH PRICE and non of that info is considered "dangerous" in my opinion
+Thats the neat point, Im woking with public Coinmarketcap API and the only thing you specify is : HOW MUCH of WHAT did you buy AT WHICH PRICE and non of that info is considered "dangerous" in my opinion
