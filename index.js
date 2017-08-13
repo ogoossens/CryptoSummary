@@ -120,7 +120,7 @@ updateAllCoins();
 
 // Schedule update for every 55 seconds
 setInterval(function () {
-    //updateAllCoins();
+    updateAllCoins();
 }, 55000);
 
 // Start listening for requests
