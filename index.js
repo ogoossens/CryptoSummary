@@ -99,8 +99,8 @@ app.use("/", function (req, res) {
 updateAllCoins();
 
 // Schedule update for every 55 seconds
-setInterval(function() {
-   updateAllCoins();
+setInterval(function () {
+    updateAllCoins();
 }, 55000);
 
 // Start listening for requests
@@ -155,10 +155,14 @@ function getCurrentValueFor(pairName) {
     // Now we know the pairName and the resultPair name
     // No idea why Kraken keeps that separate?
     request('https://api.kraken.com/0/public/Ticker?pair=' + pairName, function (error, response, body) {
-        if(error) {
-            console.log('Error:', error);
+        if (error) {
+            console.log('Error:' + error);
         }
-        krakenData[pairName] = JSON.parse(response.body.toString('utf-8')).result[resultPairName].c[0];
+        if (!(response.body.toString('utf-8').charAt(0) == "<")) {
+            krakenData[pairName] = JSON.parse(response.body.toString('utf-8')).result[resultPairName].c[0];
+        } else {
+            console.log('Error: KRAKEN RETURNING HTML, offline?');
+        }
     });
 }
 
