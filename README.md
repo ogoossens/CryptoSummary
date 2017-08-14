@@ -9,7 +9,7 @@ The idea was - as a cryptocurrency investor I always had to log in to my traders
 
 So I build a node.js app that takes in URL parameters about your open positions - checks and compares the values when you bought it and the current ones and outputs a total summary so you know where unstand 
 
-# URL = - build once, save as bookmark and check instantly anytime
+# URL - build once, save as bookmark and check instantly anytime
 Use the builder on the homepage :) but the system is easy to understand
 
 # Important
