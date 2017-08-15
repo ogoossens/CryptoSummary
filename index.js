@@ -55,6 +55,7 @@ app.use("/", function (req, res) {
         // Statistic data
         let investedValue = 0;
         let currentValue = 0;
+        let totalPercentageDifference = 0;
 
         // Lets divide this array into an array of objects
         let toParse = [];
@@ -72,7 +73,8 @@ app.use("/", function (req, res) {
                 invested: onePart[1] * onePart[2],
                 currentValueOfOne: "",
                 currentValueOfAll: "",
-                thisDifference: ""
+                thisDifference: "",
+                percentageDifference: ""
             };
 
             // Calculate the values
@@ -81,6 +83,9 @@ app.use("/", function (req, res) {
 
             // Calculate the difference
             toParse[i].thisDifference = toParse[i].currentValueOfAll - toParse[i].invested;
+
+            // Calculate the percentage of this one trade
+            toParse[i].percentageDifference = percentageString(toParse[i].currentValueOfAll, toParse[i].invested);
 
             // Count all the results together
             investedValue = investedValue + toParse[i].invested;
@@ -99,6 +104,11 @@ app.use("/", function (req, res) {
 
         // Count the difference between the day you got them and now
         let differenceValue = currentValue - investedValue;
+
+        // Count the total percentage difference of your portfolio
+        totalPercentageDifference = percentageString(currentValue, investedValue);
+
+        // Round the difference value
         differenceValue = roundNumber(differenceValue);
 
         // Ok the info was parsed, time to let EJS take over
@@ -107,7 +117,8 @@ app.use("/", function (req, res) {
             currentValue: currentValue,
             investedValue: investedValue,
             toParse: toParse,
-            currency: currency
+            currency: currency,
+            totalPercentageDifference: totalPercentageDifference
         });
     } else res.render('error', {
         fromURL: false,
@@ -184,5 +195,13 @@ function roundNumber(num) {
             sig = "+";
         }
         return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + scale)) + "e-" + scale);
+    }
+}
+
+function percentageString(newValue, oldValue) {
+    if (newValue >= oldValue) {
+        return "+" + roundNumber((newValue - oldValue) / oldValue * 100) + "%";
+    } else {
+        return "-" + roundNumber((oldValue - newValue) / oldValue * 100) + "%";
     }
 }

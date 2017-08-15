@@ -69,7 +69,7 @@
                         <b>Current Value</b>
                     </td>
                     <td align="right">
-                        <%= currentValue %>
+                        <%= " (" + totalPercentageDifference + ")  " + currentValue %>
                     </td>
                     <td>
                         <%= currency %>
@@ -87,7 +87,7 @@
                         <b>Difference</b>
                     </td>
                     <td align="right">
-                        <b><%= differenceValue %></b>
+                        <b><%=differenceValue%></b>
                     </td>
                     <td>
                         <b><%= currency %></b>
@@ -159,7 +159,7 @@
                         <%= toParse[i].currentValueOfAll %>
                     </td>
                     <td>
-                        <%= toParse[i].thisDifference %>
+                        <%= toParse[i].thisDifference + " (" + toParse[i].percentageDifference + ")  "%>
                     </td>
                 </tr>
                 <% } %>
