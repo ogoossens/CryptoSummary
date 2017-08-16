@@ -199,6 +199,9 @@ function roundNumber(num) {
 }
 
 function percentageString(newValue, oldValue) {
+    if (oldValue === 0) {
+        return "0.0%";
+    }
     if (newValue >= oldValue) {
         return "+" + roundNumber((newValue - oldValue) / oldValue * 100) + "%";
     } else {
