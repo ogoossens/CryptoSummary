@@ -152,7 +152,7 @@ function updateAllCoins() {
     // Coinbase source
     let tempArray = [];
 
-    request('https://api.coinmarketcap.com/v1/ticker/?convert=EUR&limit=250', function (error, response, body) {
+    request('https://api.coinmarketcap.com/v1/ticker/?convert=EUR&limit=200', function (error, response, body) {
         if (error) {
             console.log('Error:' + error);
         }
