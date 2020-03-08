@@ -1,4 +1,4 @@
-# CryptoSummary!
+# CryptoSummary! - project End, read last commit :)
 A node.js project for checking the value of your investments in cryptocurrencies
 
 Hosted on Heroku under : http://cryptosummary.herokuapp.com
